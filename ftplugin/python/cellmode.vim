@@ -123,8 +123,7 @@ function! RunTmuxPythonCell(restore_cursor)
   end
 endfunction
 
-function! RunTmuxPythonChunk()
-  echo 'bouh'
+function! RunTmuxPythonChunk() range
   " Yank current selection to register a
   silent normal gv"ay
   call RunTmuxPythonReg()
