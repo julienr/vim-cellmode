@@ -4,7 +4,6 @@ let g:tmux_sessionname='ipython'
 let g:tmux_windowname='ipython'
 let g:tmux_panenumber='0'
 
-
 function! PythonUnindent(code)
   " The code is unindented so the first selected line has 0 indentation
   " So you can select a statement from inside a function and it will run
