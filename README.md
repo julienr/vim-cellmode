@@ -6,7 +6,6 @@ scripts in vim, assuming an ipython interpreter running in tmux.
 Blocks are delimited by ##. For example, say you have the following python
 script :
 
-    ```python
     ##
     import numpy as np
     print 'Hello'                  # (1)
@@ -16,7 +15,6 @@ script :
       print 'Yay !'                # (2)
       print 'Foo'                  # (3)
     ##
-    ```
 
 If you put your cursor on the line marked with (1) and hit Ctrl-G, the 3 lines
 in the first cell will be sent to tmux. If you hit Ctrl-B, the same will happen
