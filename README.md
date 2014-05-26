@@ -1,0 +1,62 @@
+Vim-cellmode
+============
+This a vim plugin that enables MATLAB-style cell mode execution for python
+scripts in vim, assuming an ipython interpreter running in tmux.
+
+Blocks are delimited by ##. For example, say you have the following python
+script :
+
+    ```python
+    ##
+    import numpy as np
+    print 'Hello'                  # (1)
+    np.zeros(3)
+    ##
+    if True:
+      print 'Yay !'                # (2)
+      print 'Foo'                  # (3)
+    ##
+    ```
+
+If you put your cursor on the line marked with (1) and hit Ctrl-G, the 3 lines
+in the first cell will be sent to tmux. If you hit Ctrl-B, the same will happen
+but the cursor will move to the line after the ## (so you can chain Ctrl-B).
+
+You can also select line(s) and hit Ctrl-C to send them to tmux. The plugin
+automatically deindent selected lines so that the first line has no
+indentation. So for example if you select the line marked (2) and (3), the
+print statements will be de-indented and sent to tmux and ipython will
+correctly run them.
+
+Keys mapping
+-----------
+By default, the following mappings are enabled :
+
+* *C-c* sends the currently selected lines to tmux
+* *C-g* sends the current cell to tmux
+* *C-b* sends the current cell to tmux, moving to the next one
+
+Options
+-------
+You have to configure the target tmux session/window/pane. By default, the
+following is used :
+
+    let g:tmux_sessionname='ipython'
+    let g:tmux_windowname='ipython'
+    let g:tmux_panenumber='0'
+
+This scripts relies on a temporary file to send text from vim to tmux. By
+default, tempname() is used to get a temporary file, but if you set
+g:cellmode_fname , this will be used instead.
+
+Difference with vim-ipython
+---------------------------
+Note that if you want more advanced integration with IPython (using the new
+multi-client architecture), there is the vim-ipython project :
+https://github.com/ivanov/vim-ipython/
+
+The main difference with vim-ipython is that this plugin simply emulate a paste
+as you would do it manually from vim to ipython. This allow to see the result
+of the execution directly in the ipython split whereas vim-ipython uses a
+separate vim buffer to show the results.
+
