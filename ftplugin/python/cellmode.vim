@@ -4,6 +4,9 @@ let g:tmux_sessionname='ipython'
 let g:tmux_windowname='ipython'
 let g:tmux_panenumber='0'
 
+let g:screen_sessionname='ipython'
+let g:screen_window='0'
+
 function! PythonUnindent(code)
   " The code is unindented so the first selected line has 0 indentation
   " So you can select a statement from inside a function and it will run
@@ -32,6 +35,7 @@ function! DefaultVars()
       let b:cellmode_fname = g:cellmode_fname
     else
       let b:cellmode_fname = tempname()
+      echo 'cellmode_fname : ' . b:cellmode_fname
     end
   end
   if !exists("b:tmux_sessionname") || !exists("b:tmux_windowname") || !exists("b:tmux_panenumber")
@@ -39,6 +43,11 @@ function! DefaultVars()
     let b:tmux_windowname = g:tmux_windowname
     let b:tmux_panenumber = g:tmux_panenumber
   end
+  if !exists("g:screen_sessionname") || !exists("b:screen_window")
+    let b:screen_sessionname = g:screen_sessionname
+    let b:screen_window = g:screen_window
+  end
+
 endfunction
 
 function! CopyToTmux(code)
@@ -54,14 +63,34 @@ function! CopyToTmux(code)
   call writefile(l:lines, b:cellmode_fname)
 
   let target = b:tmux_sessionname . ':' . b:tmux_windowname . '.' . b:tmux_panenumber
-  call system('tmux load-buffer ' . b:cellmode_fname)
+  " Ipython has some trouble if we paste large buffer if it has been started
+  " in a small console. %run seems to work fine, so use that instead
+  "call system('tmux load-buffer ' . b:cellmode_fname)
+  "call system('tmux paste-buffer -t ' . target)
+  call system("tmux set-buffer \"%run -i " . b:cellmode_fname . "\n\"")
   call system('tmux paste-buffer -t ' . target)
+endfunction
+
+function! CopyToScreen(code)
+  call DefaultVars()
+  let l:lines = split(a:code, "\n")
+  " If the file is empty, it seems like tmux load-buffer keep the current
+  " buffer and this cause the last command to be repeated. We do not want that
+  " to happen, so add a dummy string
+  if len(l:lines) == 0
+    call add(l:lines, ' ')
+  end
+  call writefile(l:lines, b:cellmode_fname)
+
+  call system("pbcopy < " . b:cellmode_fname)
+  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste'")
 endfunction
 
 function! RunTmuxPythonReg()
   " Paste into tmux the content of the register @a
   let l:code = PythonUnindent(@a)
-  call CopyToTmux(l:code)
+  "call CopyToTmux(l:code)
+  call CopyToScreen(l:code)
 endfunction
 
 function! RunTmuxPythonCell(restore_cursor)

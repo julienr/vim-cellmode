@@ -1,7 +1,7 @@
 Vim-cellmode
 ============
 This a vim plugin that enables MATLAB-style cell mode execution for python
-scripts in vim, assuming an ipython interpreter running in tmux.
+scripts in vim, assuming an ipython interpreter running in screen (or tmux).
 
 Blocks are delimited by ##. For example, say you have the following python
 script :
@@ -36,16 +36,25 @@ By default, the following mappings are enabled :
 
 Options
 -------
-You have to configure the target tmux session/window/pane. By default, the
+You have to configure the target tmux/screen session/window/pane. By default, the
 following is used :
 
     let g:tmux_sessionname='ipython'
     let g:tmux_windowname='ipython'
     let g:tmux_panenumber='0'
 
+    let g:screen_sessionname='ipython'
+    let g:screen_window='0'
+
 This scripts relies on a temporary file to send text from vim to tmux. By
 default, tempname() is used to get a temporary file, but if you set
 g:cellmode_fname , this will be used instead.
+
+To choose between tmux and screen, uncomment the CopyToTmux or CopyToScreen
+line in RunTmuxPythonReg.
+Note that currently, CopyToScreen relies on OSX' pbcopy to set the paste buffer.
+On OSX, ipython started in a small tmux terminal will have trouble with long
+paste-buffer (the text will overwrite itself). So I use screen instead.
 
 Difference with vim-ipython
 ---------------------------
