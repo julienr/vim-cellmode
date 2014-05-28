@@ -26,6 +26,10 @@ indentation. So for example if you select the line marked (2) and (3), the
 print statements will be de-indented and sent to tmux and ipython will
 correctly run them.
 
+Requirements
+------------
+On Linux, you need xclip .
+
 Keys mapping
 -----------
 By default, the following mappings are enabled :

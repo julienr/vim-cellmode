@@ -82,7 +82,11 @@ function! CopyToScreen(code)
   end
   call writefile(l:lines, b:cellmode_fname)
 
-  call system("pbcopy < " . b:cellmode_fname)
+  if has('macunix')
+    call system("pbcopy < " . b:cellmode_fname)
+  else
+    call system("xclip -i -selection c " . b:cellmode_fname)
+  end
   call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste'")
 endfunction
 
