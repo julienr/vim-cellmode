@@ -28,7 +28,7 @@ correctly run them.
 
 Requirements
 ------------
-On Linux, you need xclip .
+On Linux, you need xclip if you want to use screen.
 
 Keys mapping
 -----------
