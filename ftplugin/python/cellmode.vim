@@ -7,6 +7,8 @@ let g:tmux_panenumber='0'
 let g:screen_sessionname='ipython'
 let g:screen_window='0'
 
+let g:cellmode_use_tmux=1
+
 function! PythonUnindent(code)
   " The code is unindented so the first selected line has 0 indentation
   " So you can select a statement from inside a function and it will run
@@ -64,11 +66,14 @@ function! CopyToTmux(code)
 
   let target = b:tmux_sessionname . ':' . b:tmux_windowname . '.' . b:tmux_panenumber
   " Ipython has some trouble if we paste large buffer if it has been started
-  " in a small console. %run seems to work fine, so use that instead
+  " in a small console. %load seems to work fine, so use that instead
   "call system('tmux load-buffer ' . b:cellmode_fname)
   "call system('tmux paste-buffer -t ' . target)
-  call system("tmux set-buffer \"%run -i " . b:cellmode_fname . "\n\"")
+  "call system("tmux set-buffer \"%run -i " . b:cellmode_fname . "\n\"")
+  call system("tmux set-buffer \"%load -y " . b:cellmode_fname . "\n\"")
   call system('tmux paste-buffer -t ' . target)
+  " Simulate double enter to scroll through and run loaded code
+  call system('tmux send-keys Enter Enter')
 endfunction
 
 function! CopyToScreen(code)
@@ -89,8 +94,11 @@ endfunction
 function! RunTmuxPythonReg()
   " Paste into tmux the content of the register @a
   let l:code = PythonUnindent(@a)
-  "call CopyToTmux(l:code)
-  call CopyToScreen(l:code)
+  if g:cellmode_use_tmux
+    call CopyToTmux(l:code)
+  else
+    call CopyToScreen(l:code)
+  end
 endfunction
 
 function! RunTmuxPythonCell(restore_cursor)

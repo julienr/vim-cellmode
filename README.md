@@ -50,11 +50,8 @@ This scripts relies on a temporary file to send text from vim to tmux. By
 default, tempname() is used to get a temporary file, but if you set
 g:cellmode_fname , this will be used instead.
 
-To choose between tmux and screen, uncomment the CopyToTmux or CopyToScreen
-line in RunTmuxPythonReg.
+To choose between tmux and screen, set g:cellmode_use_tmux=1 (or 0 if you want screen).
 Note that currently, CopyToScreen relies on OSX' pbcopy to set the paste buffer.
-On OSX, ipython started in a small tmux terminal will have trouble with long
-paste-buffer (the text will overwrite itself). So I use screen instead.
 
 Difference with vim-ipython
 ---------------------------
