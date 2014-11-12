@@ -64,7 +64,7 @@ function! CopyToTmux(code)
   end
   call writefile(l:lines, b:cellmode_fname)
 
-  let target = b:tmux_sessionname . ':' . b:tmux_windowname . '.' . b:tmux_panenumber
+  let target = '$' . b:tmux_sessionname . ':' . b:tmux_windowname . '.' . b:tmux_panenumber
   " Ipython has some trouble if we paste large buffer if it has been started
   " in a small console. %load seems to work fine, so use that instead
   "call system('tmux load-buffer ' . b:cellmode_fname)
@@ -73,7 +73,7 @@ function! CopyToTmux(code)
   call system("tmux set-buffer \"%load -y " . b:cellmode_fname . "\n\"")
   call system('tmux paste-buffer -t ' . target)
   " Simulate double enter to scroll through and run loaded code
-  call system('tmux send-keys Enter Enter')
+  call system('tmux send-keys -t ' . target . ' Enter Enter')
 endfunction
 
 function! CopyToScreen(code)
