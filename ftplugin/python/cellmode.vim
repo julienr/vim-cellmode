@@ -52,6 +52,14 @@ function! DefaultVars()
 
 endfunction
 
+function! CallSystem(cmd)
+  " Execute the given system command, reporting errors if any
+  let l:out = system(a:cmd)
+  if v:shell_error != 0
+    echom 'Vim-cellmode, error running ' . a:cmd . ' : ' . l:out
+  end
+endfunction
+
 function! CopyToTmux(code)
   " Copy the given code to tmux. We use a temp file for that
   call DefaultVars()
@@ -70,10 +78,10 @@ function! CopyToTmux(code)
   "call system('tmux load-buffer ' . b:cellmode_fname)
   "call system('tmux paste-buffer -t ' . target)
   "call system("tmux set-buffer \"%run -i " . b:cellmode_fname . "\n\"")
-  call system("tmux set-buffer \"%load -y " . b:cellmode_fname . "\n\"")
-  call system('tmux paste-buffer -t ' . target)
+  call CallSystem("tmux set-buffer \"%load -y " . b:cellmode_fname . "\n\"")
+  call CallSystem('tmux paste-buffer -t ' . target)
   " Simulate double enter to scroll through and run loaded code
-  call system('tmux send-keys -t ' . target . ' Enter Enter')
+  call CallSystem('tmux send-keys -t ' . target . ' Enter Enter')
 endfunction
 
 function! CopyToScreen(code)
