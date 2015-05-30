@@ -79,9 +79,9 @@ function! CopyToTmux(code)
   "call system('tmux paste-buffer -t ' . target)
   "call system("tmux set-buffer \"%run -i " . b:cellmode_fname . "\n\"")
   call CallSystem("tmux set-buffer \"%load -y " . b:cellmode_fname . "\n\"")
-  call CallSystem('tmux paste-buffer -t ' . target)
+  call CallSystem('tmux paste-buffer -t "' . target . '"')
   " Simulate double enter to scroll through and run loaded code
-  call CallSystem('tmux send-keys -t ' . target . ' Enter Enter')
+  call CallSystem('tmux send-keys -t "' . target . '" Enter Enter')
 endfunction
 
 function! CopyToScreen(code)
@@ -100,7 +100,8 @@ function! CopyToScreen(code)
   else
     call system("xclip -i -selection c " . b:cellmode_fname)
   end
-  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste'")
+  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste
+'")
 endfunction
 
 function! RunTmuxPythonReg()
