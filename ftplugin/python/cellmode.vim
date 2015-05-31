@@ -100,8 +100,7 @@ function! CopyToScreen(code)
   else
     call system("xclip -i -selection c " . b:cellmode_fname)
   end
-  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste
-'")
+  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste'")
 endfunction
 
 function! RunTmuxPythonReg()
