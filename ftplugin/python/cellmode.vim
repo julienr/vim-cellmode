@@ -1,13 +1,13 @@
 " Implementation of a MATLAB-like cellmode for python scripts where cells
 " are delimited by ##
-let g:tmux_sessionname='ipython'
-let g:tmux_windowname='ipython'
-let g:tmux_panenumber='0'
-
-let g:screen_sessionname='ipython'
-let g:screen_window='0'
-
-let g:cellmode_use_tmux=1
+"
+" You can define the following globals or buffer config variables
+"  let g:tmux_sessionname='ipython'
+"  let g:tmux_windowname='ipython'
+"  let g:tmux_panenumber='0'
+"  let g:screen_sessionname='ipython'
+"  let g:screen_window='0'
+"  let g:cellmode_use_tmux=1
 
 function! PythonUnindent(code)
   " The code is unindented so the first selected line has 0 indentation
@@ -25,6 +25,18 @@ function! PythonUnindent(code)
   return l:ucode
 endfunction
 
+function! GetVar(name, default)
+  " Return a value for the given variable, looking first into buffer, then
+  " globals and defaulting to default
+  if (exists ("b:" . a:name))
+    return b:{a:name}
+  elseif (exists ("g:" . a:name))
+    return g:{a:name}
+  else
+    return a:default
+  end
+endfunction
+
 function! DefaultVars()
   " Load and set defaults config variables :
   " - b:cellmode_fname temporary filename
@@ -33,23 +45,24 @@ function! DefaultVars()
   " - b:tmux_sessionname, b:tmux_windowname, b:tmux_panenumber :
   "   buffer-specific target (defaults to g:)
   if !exists("b:cellmode_fname")
-    if exists("g:cellmode_fname")
-      let b:cellmode_fname = g:cellmode_fname
-    else
-      let b:cellmode_fname = tempname()
-      echo 'cellmode_fname : ' . b:cellmode_fname
-    end
-  end
-  if !exists("b:tmux_sessionname") || !exists("b:tmux_windowname") || !exists("b:tmux_panenumber")
-    let b:tmux_sessionname = g:tmux_sessionname
-    let b:tmux_windowname = g:tmux_windowname
-    let b:tmux_panenumber = g:tmux_panenumber
-  end
-  if !exists("g:screen_sessionname") || !exists("b:screen_window")
-    let b:screen_sessionname = g:screen_sessionname
-    let b:screen_window = g:screen_window
+    let b:cellmode_fname = GetVar('cellmode_fname', tempname())
+    echo 'cellmode_fname : ' . b:cellmode_fname
   end
 
+  if !exists("b:cellmode_use_tmux")
+    let b:cellmode_use_tmux = GetVar('cellmode_use_tmux', 1)
+  end
+
+  if !exists("b:tmux_sessionname") || !exists("b:tmux_windowname") || !exists("b:tmux_panenumber")
+    let b:tmux_sessionname = GetVar('tmux_sessionname', 'ipython')
+    let b:tmux_windowname = GetVar('tmux_windowname', 'ipython')
+    let b:tmux_panenumber = GetVar('tmux_panenumber', '0')
+  end
+
+  if !exists("g:screen_sessionname") || !exists("b:screen_window")
+    let b:screen_sessionname = GetVar('screen_sessionname', 'ipython')
+    let b:screen_window = GetVar('screen_window', '0')
+  end
 endfunction
 
 function! CallSystem(cmd)
@@ -62,7 +75,6 @@ endfunction
 
 function! CopyToTmux(code)
   " Copy the given code to tmux. We use a temp file for that
-  call DefaultVars()
   let l:lines = split(a:code, "\n")
   " If the file is empty, it seems like tmux load-buffer keep the current
   " buffer and this cause the last command to be repeated. We do not want that
@@ -85,7 +97,6 @@ function! CopyToTmux(code)
 endfunction
 
 function! CopyToScreen(code)
-  call DefaultVars()
   let l:lines = split(a:code, "\n")
   " If the file is empty, it seems like tmux load-buffer keep the current
   " buffer and this cause the last command to be repeated. We do not want that
@@ -104,9 +115,10 @@ function! CopyToScreen(code)
 endfunction
 
 function! RunTmuxPythonReg()
+  call DefaultVars()
   " Paste into tmux the content of the register @a
   let l:code = PythonUnindent(@a)
-  if g:cellmode_use_tmux
+  if b:cellmode_use_tmux
     call CopyToTmux(l:code)
   else
     call CopyToScreen(l:code)
@@ -123,6 +135,7 @@ function! RunTmuxPythonCell(restore_cursor)
   " /##/ End the range at the next ##
   " See the doce on 'ex ranges' here :
   " http://tnerual.eriogerg.free.fr/vimqrc.html
+  call DefaultVars()
   if a:restore_cursor
     let l:cursor_pos = getpos(".")
   end
@@ -144,6 +157,7 @@ function! RunTmuxPythonCell(restore_cursor)
 endfunction
 
 function! RunTmuxPythonChunk() range
+  call DefaultVars()
   " Yank current selection to register a
   silent normal gv"ay
   call RunTmuxPythonReg()
