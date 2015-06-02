@@ -131,6 +131,7 @@ function! RunTmuxPythonCell(restore_cursor)
   " file
   " The :?##?;/##/ part creates a range with the following
   " ?##? search backwards for ##
+
   " Then ';' starts the range from the result of the previous search (##)
   " /##/ End the range at the next ##
   " See the doce on 'ex ranges' here :
@@ -143,7 +144,7 @@ function! RunTmuxPythonCell(restore_cursor)
 
   " Now, we want to position ourselves inside the next block to allow block
   " execution chaining (of course if restore_cursor is true, this is a no-op
-  ']  " Move to the last character of previously yanked text
+  " Move to the last character of previously yanked text
   execute "normal! j"
 
   " The above will have the leading and ending ## in the register, but we
