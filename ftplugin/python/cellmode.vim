@@ -157,6 +157,27 @@ function! RunTmuxPythonCell(restore_cursor)
   end
 endfunction
 
+function! RunTmuxPythonAllCellsAbove()
+  " Executes all the cells above the current line. That is, everything from
+  " the beginning of the file to the closest ## above the current line
+  call DefaultVars()
+
+  " Ask the user for confirmation, this could lead to huge execution
+  if input("Execute all cells above ? [y]|n ", 'y') != "y"
+    return
+  endif
+
+  let l:cursor_pos = getpos(".")
+
+  " Creates a range from the first line to the closest ## above the current
+  " line (?##? searches backward for ##)
+  silent :1,?##?y a
+
+  let @a=join(split(@a, "\n")[:-2], "\n")
+  call RunTmuxPythonReg()
+  call setpos(".", l:cursor_pos)
+endfunction
+
 function! RunTmuxPythonChunk() range
   call DefaultVars()
   " Yank current selection to register a

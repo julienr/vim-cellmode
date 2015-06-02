@@ -38,6 +38,12 @@ By default, the following mappings are enabled :
 * *C-g* sends the current cell to tmux
 * *C-b* sends the current cell to tmux, moving to the next one
 
+In addition, there is a function to execute all cells above the current line
+which isn't bound by default, but you can easily bind it with :
+
+    noremap <silent> <C-a> :call RunTmuxPythonAllCellsAbove()<CR>
+
+
 Options
 -------
 You have to configure the target tmux/screen session/window/pane. By default, the
