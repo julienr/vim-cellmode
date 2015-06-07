@@ -56,9 +56,10 @@ following is used :
     let g:screen_sessionname='ipython'
     let g:screen_window='0'
 
-This scripts relies on a temporary file to send text from vim to tmux. By
-default, tempname() is used to get a temporary file, but if you set
-g:cellmode_fname , this will be used instead.
+This scripts relies on temporary files to send text from vim to tmux. To
+allow cell execution queuing, we use a rolling buffer of temporary files.
+You can control the size of the buffer by defining `g:cellmode_n_files` (10
+by default).
 
 To choose between tmux and screen, set g:cellmode_use_tmux=1 (or 0 if you want screen).
 Note that currently, CopyToScreen relies on OSX' pbcopy to set the paste buffer.

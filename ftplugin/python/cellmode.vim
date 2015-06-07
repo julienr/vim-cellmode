@@ -37,6 +37,44 @@ function! GetVar(name, default)
   end
 endfunction
 
+function! CleanupTempFiles()
+  " Called when leaving current buffer; Cleans up temporary files
+  for fname in b:cellmode_fnames
+    call delete(fname)
+  end
+  unlet b:cellmode_fnames
+endfunction
+
+function! GetNextTempFile()
+  " Returns the next temporary filename to use
+  "
+  " We use temporary files to communicate with tmux. That is we :
+  " - write the content of a register to a tmpfile
+  " - have ipython running inside tmux load and run the tmpfile
+  " If we use only one temporary file, quick execution of multiple cells will
+  " result in the tmpfile being overrident. So we use multiple tmpfile that
+  " act as a rolling buffer (the size of which is configured by
+  " cellmode_n_files)
+  if !exists("b:cellmode_fnames")
+    au BufLeave <buffer> call CleanupTempFiles()
+    let b:cellmode_fnames = []
+    for i in range(1, b:cellmode_n_files)
+      call add(b:cellmode_fnames, tempname())
+    endfor
+    let b:cellmode_fnames_index = 0
+  end
+  let l:cellmode_fname = b:cellmode_fnames[b:cellmode_fnames_index]
+  " TODO: Would be better to use modulo, but vim doesn't seem to like % here...
+  if (b:cellmode_fnames_index >= b:cellmode_n_files - 1)
+    let b:cellmode_fnames_index = 0
+  else
+    let b:cellmode_fnames_index += 1
+  endif
+
+  "echo 'cellmode_fname : ' . l:cellmode_fname
+  return l:cellmode_fname
+endfunction
+
 function! DefaultVars()
   " Load and set defaults config variables :
   " - b:cellmode_fname temporary filename
@@ -44,16 +82,14 @@ function! DefaultVars()
   "   target
   " - b:tmux_sessionname, b:tmux_windowname, b:tmux_panenumber :
   "   buffer-specific target (defaults to g:)
-  if !exists("b:cellmode_fname")
-    let b:cellmode_fname = GetVar('cellmode_fname', tempname())
-    echo 'cellmode_fname : ' . b:cellmode_fname
-  end
+  let b:cellmode_n_files = GetVar('cellmode_n_files', 10)
 
   if !exists("b:cellmode_use_tmux")
     let b:cellmode_use_tmux = GetVar('cellmode_use_tmux', 1)
   end
 
-  if !exists("b:tmux_sessionname") || !exists("b:tmux_windowname") || !exists("b:tmux_panenumber")
+  if !exists("b:tmux_sessionname") || !exists("b:tmux_windowname") ||
+   \ !exists("b:tmux_panenumber")
     let b:tmux_sessionname = GetVar('tmux_sessionname', 'ipython')
     let b:tmux_windowname = GetVar('tmux_windowname', 'ipython')
     let b:tmux_panenumber = GetVar('tmux_panenumber', '0')
@@ -82,15 +118,17 @@ function! CopyToTmux(code)
   if len(l:lines) == 0
     call add(l:lines, ' ')
   end
-  call writefile(l:lines, b:cellmode_fname)
+  let l:cellmode_fname = GetNextTempFile()
+  call writefile(l:lines, l:cellmode_fname)
 
-  let target = '$' . b:tmux_sessionname . ':' . b:tmux_windowname . '.' . b:tmux_panenumber
+  let target = '$' . b:tmux_sessionname . ':' . b:tmux_windowname . '.'
+             \ . b:tmux_panenumber
   " Ipython has some trouble if we paste large buffer if it has been started
   " in a small console. %load seems to work fine, so use that instead
-  "call system('tmux load-buffer ' . b:cellmode_fname)
+  "call system('tmux load-buffer ' . l:cellmode_fname)
   "call system('tmux paste-buffer -t ' . target)
-  "call system("tmux set-buffer \"%run -i " . b:cellmode_fname . "\n\"")
-  call CallSystem("tmux set-buffer \"%load -y " . b:cellmode_fname . "\n\"")
+  "call system("tmux set-buffer \"%run -i " . l:cellmode_fname . "\n\"")
+  call CallSystem("tmux set-buffer \"%load -y " . l:cellmode_fname . "\n\"")
   call CallSystem('tmux paste-buffer -t "' . target . '"')
   " Simulate double enter to scroll through and run loaded code
   call CallSystem('tmux send-keys -t "' . target . '" Enter Enter')
@@ -104,18 +142,19 @@ function! CopyToScreen(code)
   if len(l:lines) == 0
     call add(l:lines, ' ')
   end
-  call writefile(l:lines, b:cellmode_fname)
+  let l:cellmode_fname = call GetNextTempFile()
+  call writefile(l:lines, l:cellmode_fname)
 
   if has('macunix')
-    call system("pbcopy < " . b:cellmode_fname)
+    call system("pbcopy < " . l:cellmode_fname)
   else
-    call system("xclip -i -selection c " . b:cellmode_fname)
+    call system("xclip -i -selection c " . l:cellmode_fname)
   end
-  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window . " -X stuff '%paste'")
+  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window
+              \ . " -X stuff '%paste'")
 endfunction
 
 function! RunTmuxPythonReg()
-  call DefaultVars()
   " Paste into tmux the content of the register @a
   let l:code = PythonUnindent(@a)
   if b:cellmode_use_tmux
