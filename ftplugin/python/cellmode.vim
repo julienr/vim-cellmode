@@ -39,10 +39,12 @@ endfunction
 
 function! CleanupTempFiles()
   " Called when leaving current buffer; Cleans up temporary files
-  for fname in b:cellmode_fnames
-    call delete(fname)
+  if (exists('b:cellmode_fnames'))
+    for fname in b:cellmode_fnames
+      call delete(fname)
+    endfor
+    unlet b:cellmode_fnames
   end
-  unlet b:cellmode_fnames
 endfunction
 
 function! GetNextTempFile()
@@ -56,7 +58,7 @@ function! GetNextTempFile()
   " act as a rolling buffer (the size of which is configured by
   " cellmode_n_files)
   if !exists("b:cellmode_fnames")
-    au BufLeave <buffer> call CleanupTempFiles()
+    au BufDelete <buffer> call CleanupTempFiles()
     let b:cellmode_fnames = []
     for i in range(1, b:cellmode_n_files)
       call add(b:cellmode_fnames, tempname())
