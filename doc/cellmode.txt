@@ -1,0 +1,100 @@
+*cellmode.txt*  For Vim version 7.4
+
+=============================================================================
+Cellmode                                 *Cellmode*
+
+  1. Introduction ...................... |CellmodeIntro|
+  2. Usage ............................. |CellmodeUsage|
+  3. Mapping ........................... |CellmodeMappings|
+  4. Options ........................... |CellmodeOptions|
+  5. Credits ........................... |CellmodeCredits|
+
+
+=============================================================================
+1. Introduction                          *CellmodeIntro*
+
+This a vim plugin that enables MATLAB-style cell mode execution for python
+scripts in vim, assuming an ipython interpreter running in screen (or tmux).
+
+Blocks are delimited by ##. For example, say you have the following python
+script :
+>
+  ##
+  import numpy as np
+  print 'Hello'                  # (1)
+  np.zeros(3)
+  ##
+  if True:
+    print 'Yay !'                # (2)
+    print 'Foo'                  # (3)
+  ##
+<
+If you put your cursor on the line marked with (1) and hit Ctrl-G, the 3
+lines in the first cell will be sent to tmux. If you hit Ctrl-B, the same
+will happen but the cursor will move to the line after the ## (so you can
+chain Ctrl-B).
+
+You can also select line(s) and hit Ctrl-C to send them to tmux. The
+plugin automatically deindent selected lines so that the first line has no
+indentation. So for example if you select the line marked (2) and (3), the
+print statements will be de-indented and sent to tmux and ipython will
+correctly run them.
+
+=============================================================================
+2. Usage                                       *CellmodeUsage*
+
+This plugin assumes you have an ipython interpreter running in tmux.
+The target tmux pane to which python cells will be sent should be
+'ipython:ipython.0'
+
+This means you have to run the following in tmux :
+>
+  rename-session ipython
+  rename-window ipython
+<
+Then,you can use the |cellmode-mappings| to execute cells and send them to
+your ipython interpretre.
+
+=============================================================================
+3. Mappings                                       *CellmodeMappings*
+
+By default, the following mappings are enabled :
+
+  C-c sends the currently selected lines to tmux
+  C-g sends the current cell to tmux
+  C-b sends the current cell to tmux, moving to the next one
+
+In addition, there is a function to execute all cells above the current line
+which isn't bound by default, but you can easily bind it with :
+
+  noremap <silent> <C-a> :call RunTmuxPythonAllCellsAbove()<CR>
+
+=============================================================================
+4. Options                                       *CellmodeOptions*
+
+To configure the target tmux pane in which ipython is running, use the
+three following variables (which can be either globals or buffer-local (b:)) :
+
+  let g:tmux_sessionname='ipython'
+  let g:tmux_windowname='ipython'
+  let g:tmux_panenumber='0'
+
+You can change the default mappings which are defined by
+
+  vmap <silent> <C-c> :call RunTmuxPythonChunk()<CR>
+  noremap <silent> <C-b> :call RunTmuxPythonCell(0)<CR>
+  noremap <silent> <C-g> :call RunTmuxPythonCell(1)<CR>
+
+=============================================================================
+5. Credits                                       *CellmodeCredits*
+
+Vim-cellmode was initially written by Julien Rebetez.
+
+Thanks to the following people for their code/ideas/bug reports/other
+contributions :
+
+  Erdi Aker
+  nilsbecker
+
+
+  vim:ts=4:et:ft=help:
