@@ -2,11 +2,11 @@
 " are delimited by ##
 "
 " You can define the following globals or buffer config variables
-"  let g:tmux_sessionname='ipython'
-"  let g:tmux_windowname='ipython'
-"  let g:tmux_panenumber='0'
-"  let g:screen_sessionname='ipython'
-"  let g:screen_window='0'
+"  let g:cellmode_tmux_sessionname='ipython'
+"  let g:cellmode_tmux_windowname='ipython'
+"  let g:cellmode_tmux_panenumber='0'
+"  let g:cellmode_screen_sessionname='ipython'
+"  let g:cellmode_screen_window='0'
 "  let g:cellmode_use_tmux=1
 
 function! PythonUnindent(code)
@@ -80,9 +80,11 @@ endfunction
 function! DefaultVars()
   " Load and set defaults config variables :
   " - b:cellmode_fname temporary filename
-  " - g:tmux_sessionname, g:tmux_windowname, g:tmux_panenumber : default tmux
+  " - g:cellmode_tmux_sessionname, g:cellmode_tmux_windowname,
+  "   g:cellmode_tmux_panenumber : default tmux
   "   target
-  " - b:tmux_sessionname, b:tmux_windowname, b:tmux_panenumber :
+  " - b:cellmode_tmux_sessionname, b:cellmode_tmux_windowname,
+  "   b:cellmode_tmux_panenumber :
   "   buffer-specific target (defaults to g:)
   let b:cellmode_n_files = GetVar('cellmode_n_files', 10)
 
@@ -90,16 +92,18 @@ function! DefaultVars()
     let b:cellmode_use_tmux = GetVar('cellmode_use_tmux', 1)
   end
 
-  if !exists("b:tmux_sessionname") || !exists("b:tmux_windowname") ||
-   \ !exists("b:tmux_panenumber")
-    let b:tmux_sessionname = GetVar('tmux_sessionname', 'ipython')
-    let b:tmux_windowname = GetVar('tmux_windowname', 'ipython')
-    let b:tmux_panenumber = GetVar('tmux_panenumber', '0')
+  if !exists("b:cellmode_tmux_sessionname") ||
+   \ !exists("b:cellmode_tmux_windowname") ||
+   \ !exists("b:cellmode_tmux_panenumber")
+    let b:cellmode_tmux_sessionname = GetVar('cellmode_tmux_sessionname', 'ipython')
+    let b:cellmode_tmux_windowname = GetVar('cellmode_tmux_windowname', 'ipython')
+    let b:cellmode_tmux_panenumber = GetVar('cellmode_tmux_panenumber', '0')
   end
 
-  if !exists("g:screen_sessionname") || !exists("b:screen_window")
-    let b:screen_sessionname = GetVar('screen_sessionname', 'ipython')
-    let b:screen_window = GetVar('screen_window', '0')
+  if !exists("g:cellmode_screen_sessionname") ||
+   \ !exists("b:cellmode_screen_window")
+    let b:cellmode_screen_sessionname = GetVar('cellmode_screen_sessionname', 'ipython')
+    let b:cellmode_screen_window = GetVar('cellmode_screen_window', '0')
   end
 endfunction
 
@@ -123,8 +127,9 @@ function! CopyToTmux(code)
   let l:cellmode_fname = GetNextTempFile()
   call writefile(l:lines, l:cellmode_fname)
 
-  let target = '$' . b:tmux_sessionname . ':' . b:tmux_windowname . '.'
-             \ . b:tmux_panenumber
+  let target = '$' . b:cellmode_tmux_sessionname . ':'
+             \ . b:cellmode_tmux_windowname . '.'
+             \ . b:cellmode_tmux_panenumber
   " Ipython has some trouble if we paste large buffer if it has been started
   " in a small console. %load seems to work fine, so use that instead
   "call system('tmux load-buffer ' . l:cellmode_fname)
@@ -152,7 +157,8 @@ function! CopyToScreen(code)
   else
     call system("xclip -i -selection c " . l:cellmode_fname)
   end
-  call system("screen -S " . b:screen_sessionname . " -p " . b:screen_window
+  call system("screen -S " . b:cellmode_screen_sessionname .
+             \ " -p " . b:cellmode_screen_window
               \ . " -X stuff '%paste'")
 endfunction
 
