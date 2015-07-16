@@ -3,6 +3,13 @@ Vim-cellmode
 This a vim plugin that enables MATLAB-style cell mode execution for python
 scripts in vim, assuming an ipython interpreter running in screen (or tmux).
 
+Demo
+----
+[![Youtube demo video](http://img.youtube.com/vi/ju50L7Fcn7w/0.jpg)](http://www.youtube.com/watch?v=ju50L7Fcn7w)
+
+Usage
+-----
+
 Blocks are delimited by ##. For example, say you have the following python
 script :
 
