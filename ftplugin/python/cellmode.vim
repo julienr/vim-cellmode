@@ -2,7 +2,7 @@
 " are delimited by ##
 "
 " You can define the following globals or buffer config variables
-"  let g:cellmode_tmux_sessionname='ipython'
+"  let g:cellmode_tmux_sessionname='$ipython'
 "  let g:cellmode_tmux_windowname='ipython'
 "  let g:cellmode_tmux_panenumber='0'
 "  let g:cellmode_screen_sessionname='ipython'
