@@ -95,7 +95,7 @@ function! DefaultVars()
   if !exists("b:cellmode_tmux_sessionname") ||
    \ !exists("b:cellmode_tmux_windowname") ||
    \ !exists("b:cellmode_tmux_panenumber")
-    let b:cellmode_tmux_sessionname = GetVar('cellmode_tmux_sessionname', 'ipython')
+    let b:cellmode_tmux_sessionname = GetVar('cellmode_tmux_sessionname', '$ipython')
     let b:cellmode_tmux_windowname = GetVar('cellmode_tmux_windowname', 'ipython')
     let b:cellmode_tmux_panenumber = GetVar('cellmode_tmux_panenumber', '0')
   end
