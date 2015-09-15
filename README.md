@@ -56,8 +56,8 @@ Options
 You have to configure the target tmux/screen session/window/pane. By default, the
 following is used :
 
-    let g:tmux_sessionname='$ipython'
-    let g:tmux_windowname='ipython'
+    let g:tmux_sessionname=''  " Will try to automatically pickup tmux session
+    let g:tmux_windowname=''
     let g:tmux_panenumber='0'
 
     let g:screen_sessionname='ipython'
