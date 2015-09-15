@@ -53,7 +53,7 @@ This means you have to run the following in tmux :
   rename-window ipython
 <
 Then,you can use the |cellmode-mappings| to execute cells and send them to
-your ipython interpretre.
+your ipython interpreter.
 
 =============================================================================
 3. Mappings                                       *CellmodeMappings*
@@ -78,6 +78,11 @@ three following variables (which can be either globals or buffer-local (b:)) :
   let g:tmux_sessionname='ipython'
   let g:tmux_windowname='ipython'
   let g:tmux_panenumber='0'
+
+You can also set `g:tmux_sessionname` and `g:tmux_windowname` to empty
+strings. This will make tmux automatically pick a tmux session. If you are
+running vim inside tmux, this will pick the current tmux session. Otherwise,
+it seems to pick the most recently launched session.
 
 You can change the default mappings which are defined by
 

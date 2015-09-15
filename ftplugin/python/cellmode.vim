@@ -95,8 +95,10 @@ function! DefaultVars()
   if !exists("b:cellmode_tmux_sessionname") ||
    \ !exists("b:cellmode_tmux_windowname") ||
    \ !exists("b:cellmode_tmux_panenumber")
-    let b:cellmode_tmux_sessionname = GetVar('cellmode_tmux_sessionname', '$ipython')
-    let b:cellmode_tmux_windowname = GetVar('cellmode_tmux_windowname', 'ipython')
+    " Empty target session and window by default => try to automatically pick
+    " tmux session
+    let b:cellmode_tmux_sessionname = GetVar('cellmode_tmux_sessionname', '')
+    let b:cellmode_tmux_windowname = GetVar('cellmode_tmux_windowname', '')
     let b:cellmode_tmux_panenumber = GetVar('cellmode_tmux_panenumber', '0')
   end
 
@@ -127,9 +129,18 @@ function! CopyToTmux(code)
   let l:cellmode_fname = GetNextTempFile()
   call writefile(l:lines, l:cellmode_fname)
 
-  let target = '$' . b:cellmode_tmux_sessionname . ':'
+  " tmux requires the sessionname to start with $ (for example $ipython to
+  " target the session named 'ipython'). Except in the case where we
+  " want to target the current tmux session (with vim running in tmux)
+  if strlen(b:cellmode_tmux_sessionname) == 0
+    let l:sprefix = ''
+  else
+    let l:sprefix = '$'
+  end
+  let target = l:sprefix . b:cellmode_tmux_sessionname . ':'
              \ . b:cellmode_tmux_windowname . '.'
              \ . b:cellmode_tmux_panenumber
+
   " Ipython has some trouble if we paste large buffer if it has been started
   " in a small console. %load seems to work fine, so use that instead
   "call system('tmux load-buffer ' . l:cellmode_fname)
