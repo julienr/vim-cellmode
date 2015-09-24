@@ -56,12 +56,12 @@ Options
 You have to configure the target tmux/screen session/window/pane. By default, the
 following is used :
 
-    let g:tmux_sessionname=''  " Will try to automatically pickup tmux session
-    let g:tmux_windowname=''
-    let g:tmux_panenumber='0'
+    let g:cellmode_tmux_sessionname=''  " Will try to automatically pickup tmux session
+    let g:cellmode_tmux_windowname=''
+    let g:cellmode_tmux_panenumber='0'
 
-    let g:screen_sessionname='ipython'
-    let g:screen_window='0'
+    let g:cellmode_screen_sessionname='ipython'
+    let g:cellmode_screen_window='0'
 
 This scripts relies on temporary files to send text from vim to tmux. To
 allow cell execution queuing, we use a rolling buffer of temporary files.
