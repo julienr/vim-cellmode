@@ -75,11 +75,11 @@ which isn't bound by default, but you can easily bind it with :
 To configure the target tmux pane in which ipython is running, use the
 three following variables (which can be either globals or buffer-local (b:)) :
 
-  let g:tmux_sessionname='ipython'
-  let g:tmux_windowname='ipython'
-  let g:tmux_panenumber='0'
+  let g:cellmode_tmux_sessionname='ipython'
+  let g:cellmode_tmux_windowname='ipython'
+  let g:cellmode_tmux_panenumber='0'
 
-You can also set `g:tmux_sessionname` and `g:tmux_windowname` to empty
+You can also set `g:cellmode_tmux_sessionname` and `g:cellmode_tmux_windowname` to empty
 strings. This will make tmux automatically pick a tmux session. If you are
 running vim inside tmux, this will pick the current tmux session. Otherwise,
 it seems to pick the most recently launched session.
