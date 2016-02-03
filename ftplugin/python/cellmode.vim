@@ -196,7 +196,7 @@ function! RunTmuxPythonCell(restore_cursor)
   " http://tnerual.eriogerg.free.fr/vimqrc.html
   call DefaultVars()
   if a:restore_cursor
-    let l:cursor_pos = getpos(".")
+    let l:winview = winsaveview()
   end
   silent :?##?;/##/y a
 
@@ -213,7 +213,7 @@ function! RunTmuxPythonCell(restore_cursor)
   let @a=join(split(@a, "\n")[1:-2], "\n")
   call RunTmuxPythonReg()
   if a:restore_cursor
-    call setpos(".", l:cursor_pos)
+    call winrestview(l:winview)
   end
 endfunction
 
