@@ -61,7 +61,7 @@ function! GetNextTempFile()
     au BufDelete <buffer> call CleanupTempFiles()
     let b:cellmode_fnames = []
     for i in range(1, b:cellmode_n_files)
-      call add(b:cellmode_fnames, tempname())
+      call add(b:cellmode_fnames, tempname() . ".ipy")
     endfor
     let b:cellmode_fnames_index = 0
   end
