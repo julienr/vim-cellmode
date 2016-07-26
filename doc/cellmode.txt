@@ -64,6 +64,10 @@ By default, the following mappings are enabled :
   C-g sends the current cell to tmux
   C-b sends the current cell to tmux, moving to the next one
 
+You can disable default mappings :
+
+    let g:cellmode_default_mappings='0'
+
 In addition, there is a function to execute all cells above the current line
 which isn't bound by default, but you can easily bind it with :
 

@@ -248,6 +248,20 @@ function! RunTmuxPythonChunk() range
   call RunTmuxPythonReg()
 endfunction
 
-vmap <silent> <C-c> :call RunTmuxPythonChunk()<CR>
-noremap <silent> <C-b> :call RunTmuxPythonCell(0)<CR>
-noremap <silent> <C-g> :call RunTmuxPythonCell(1)<CR>
+" Returns:
+"   1 if the var is set, 0 otherwise
+function s:InitVariable(var, value)
+    if !exists(a:var)
+        execute 'let ' . a:var . ' = ' . "'" . a:value . "'"
+        return 1
+    endif
+    return 0
+endfunction
+
+call s:InitVariable("g:cellmode_default_mappings", 1)
+
+if g:cellmode_default_mappings
+    vmap <silent> <C-c> :call RunTmuxPythonChunk()<CR>
+    noremap <silent> <C-b> :call RunTmuxPythonCell(0)<CR>
+    noremap <silent> <C-g> :call RunTmuxPythonCell(1)<CR>
+endif
