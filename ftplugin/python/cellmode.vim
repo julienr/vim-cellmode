@@ -250,7 +250,7 @@ endfunction
 
 " Returns:
 "   1 if the var is set, 0 otherwise
-function s:InitVariable(var, value)
+function! InitVariable(var, value)
     if !exists(a:var)
         execute 'let ' . a:var . ' = ' . "'" . a:value . "'"
         return 1
@@ -258,7 +258,7 @@ function s:InitVariable(var, value)
     return 0
 endfunction
 
-call s:InitVariable("g:cellmode_default_mappings", 1)
+call InitVariable("g:cellmode_default_mappings", 1)
 
 if g:cellmode_default_mappings
     vmap <silent> <C-c> :call RunTmuxPythonChunk()<CR>
