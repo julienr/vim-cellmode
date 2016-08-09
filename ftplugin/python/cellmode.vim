@@ -142,17 +142,17 @@ function! CopyToTmux(code)
              \ . b:cellmode_tmux_panenumber
 
   " Ipython has some trouble if we paste large buffer if it has been started
-  " in a small console. %run seems to work fine, so use that instead
+  " in a small console. We use %load to work around that
   "call CallSystem('tmux load-buffer ' . l:cellmode_fname)
   "call CallSystem('tmux paste-buffer -t ' . target)
-  " Using %load does not work anymore in ipython 5 because the cursor is moved
-  " at the beginning of the loaded code and you have to scroll all the way to
-  " the bottom and hit enter to execute. So use %run instead
-  "call CallSystem("tmux set-buffer \"%load -y " . l:cellmode_fname . "\n\"")
-  call CallSystem("tmux set-buffer \"%run -n -i " . l:cellmode_fname . "\n\"")
+  call CallSystem("tmux set-buffer \"%load -y " . l:cellmode_fname . "\n\"")
   call CallSystem('tmux paste-buffer -t "' . target . '"')
-  " Simulate double enter to scroll through and run loaded code
-  "call CallSystem('tmux send-keys -t "' . target . '" Enter Enter')
+  " In ipython5, the cursor starts at the top of the lines, so we have to move
+  " to the bottom
+  let downlist = repeat('Down ', len(l:lines) + 1)
+  call CallSystem('tmux send-keys -t "' . target . '" ' . downlist)
+  " Simulate double enter to run loaded code
+  call CallSystem('tmux send-keys -t "' . target . '" Enter Enter')
 endfunction
 
 function! CopyToScreen(code)
