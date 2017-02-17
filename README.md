@@ -86,3 +86,6 @@ as you would do it manually from vim to ipython. This allow to see the result
 of the execution directly in the ipython split whereas vim-ipython uses a
 separate vim buffer to show the results.
 
+License
+-------
+MIT (see LICENSE)
