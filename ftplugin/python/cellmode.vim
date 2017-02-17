@@ -163,7 +163,7 @@ function! CopyToScreen(code)
   if len(l:lines) == 0
     call add(l:lines, ' ')
   end
-  let l:cellmode_fname = call GetNextTempFile()
+  let l:cellmode_fname = GetNextTempFile()
   call writefile(l:lines, l:cellmode_fname)
 
   if has('macunix')
@@ -173,7 +173,7 @@ function! CopyToScreen(code)
   end
   call system("screen -S " . b:cellmode_screen_sessionname .
              \ " -p " . b:cellmode_screen_window
-              \ . " -X stuff '%paste'")
+              \ . " -X stuff '%paste\n'")
 endfunction
 
 function! RunTmuxPythonReg()
