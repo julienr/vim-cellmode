@@ -72,7 +72,7 @@ allow cell execution queuing, we use a rolling buffer of temporary files.
 You can control the size of the buffer by defining `g:cellmode_n_files` (10
 by default).
 
-To choose between tmux and screen, set g:cellmode_use_tmux=1 (or 0 if you want screen).
+To choose between tmux and screen, set `g:cellmode_use_tmux=1` (or 0 if you want screen).
 Note that currently, CopyToScreen relies on OSX' pbcopy to set the paste buffer.
 
 Difference with vim-ipython
