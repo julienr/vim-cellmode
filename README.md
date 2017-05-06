@@ -10,8 +10,9 @@ Demo
 Usage
 -----
 
-Blocks are delimited by ##. For example, say you have the following python
-script :
+Blocks are delimited by ##, #%% or # %% (customizable through
+`cellmode_cell_delimiter`).
+For example, say you have the following python script :
 
     ##
     import numpy as np
@@ -74,6 +75,14 @@ by default).
 
 To choose between tmux and screen, set `g:cellmode_use_tmux=1` (or 0 if you want screen).
 Note that currently, CopyToScreen relies on OSX' pbcopy to set the paste buffer.
+
+You can also configure the cell delimiter. This is done through the
+`cellmode_cell_delimiter_variable` (prefix it with b: to only
+affect the current buffer). So for example
+
+    set g:cellmode_cell_delimiter='\(##\|#%%\|#\s%%\)'
+
+will match ##, #%% and # %% as cell delimiters. This is the default configuration.
 
 Difference with vim-ipython
 ---------------------------

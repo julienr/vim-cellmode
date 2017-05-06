@@ -92,6 +92,12 @@ function! DefaultVars()
     let b:cellmode_use_tmux = GetVar('cellmode_use_tmux', 1)
   end
 
+  if !exists("b:cellmode_cell_delimiter")
+    " By default, use ##, #%% or # %% (to be compatible with spyder)
+    let b:cellmode_cell_delimiter = GetVar('cellmode_cell_delimiter',
+                                         \ '\(##\|#%%\|#\s%%\)')
+  end
+
   if !exists("b:cellmode_tmux_sessionname") ||
    \ !exists("b:cellmode_tmux_windowname") ||
    \ !exists("b:cellmode_tmux_panenumber")
@@ -197,11 +203,21 @@ function! RunTmuxPythonCell(restore_cursor)
   " /##/ End the range at the next ##
   " See the doce on 'ex ranges' here :
   " http://tnerual.eriogerg.free.fr/vimqrc.html
+  "
+  " Note that cell delimiters can be configured through
+  " b:cellmode_cell_delimiter, but we keep ## in the comments for simplicity
   call DefaultVars()
   if a:restore_cursor
     let l:winview = winsaveview()
   end
-  silent :?##?;/##/y a
+
+  " Generates the cell delimiter search pattern
+  let l:pat = ':?' . b:cellmode_cell_delimiter . '?;/' . b:cellmode_cell_delimiter . '/y a'
+
+  " Execute it
+  silent exe l:pat
+
+  "silent :?\=b:cellmode_cell_delimiter?;/\=b:cellmode_cell_delimiter/y a
 
   " Now, we want to position ourselves inside the next block to allow block
   " execution chaining (of course if restore_cursor is true, this is a no-op
@@ -234,7 +250,8 @@ function! RunTmuxPythonAllCellsAbove()
 
   " Creates a range from the first line to the closest ## above the current
   " line (?##? searches backward for ##)
-  silent :1,?##?y a
+  let l:pat = ':1,?' . b:cellmode_cell_delimiter . '?y a'
+  silent exe l:pat
 
   let @a=join(split(@a, "\n")[:-2], "\n")
   call RunTmuxPythonReg()
