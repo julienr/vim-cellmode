@@ -265,6 +265,13 @@ function! RunTmuxPythonChunk() range
   call RunTmuxPythonReg()
 endfunction
 
+function! RunTmuxPythonLine()
+  call DefaultVars()
+  " Yank current selection to register a
+  silent normal "ayy
+  call RunTmuxPythonReg()
+endfunction
+
 " Returns:
 "   1 if the var is set, 0 otherwise
 function! InitVariable(var, value)
