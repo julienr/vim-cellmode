@@ -242,7 +242,7 @@ function! RunTmuxPythonAllCellsAbove()
   call DefaultVars()
 
   " Ask the user for confirmation, this could lead to huge execution
-  if input("Execute all cells above ? [y]|n ", 'y') != "y"
+  if confirm("Execute all cells above?", "&Yes\n&No") != 1
     return
   endif
 
